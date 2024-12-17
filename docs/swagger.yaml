@@ -1,0 +1,266 @@
+basePath: /
+definitions:
+  model.Post:
+    properties:
+      content:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      title:
+        type: string
+    type: object
+  model.Role:
+    enum:
+    - admin
+    - user
+    type: string
+    x-enum-varnames:
+    - ADMIN
+    - USER
+  model.User:
+    properties:
+      id:
+        type: integer
+      login:
+        type: string
+      role:
+        $ref: '#/definitions/model.Role'
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: Swagger-документация для API регистрации, авторизации и управления
+    постами.
+  title: API для авторизации и постов
+  version: "1.0"
+paths:
+  /v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Авторизация с логином и паролем
+      parameters:
+      - description: Логин пользователя
+        in: body
+        name: login
+        required: true
+        schema:
+          type: string
+      - description: Пароль пользователя
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Авторизация пользователя
+      tags:
+      - v1
+  /v1/signup:
+    post:
+      consumes:
+      - application/json
+      description: Создание нового пользователя с ролью "user"
+      parameters:
+      - description: Логин пользователя
+        in: body
+        name: login
+        required: true
+        schema:
+          type: string
+      - description: Пароль пользователя
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Регистрация пользователя
+      tags:
+      - v1
+  /v2/posts:
+    get:
+      description: Возвращает список всех постов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список постов
+          schema:
+            items:
+              $ref: '#/definitions/model.Post'
+            type: array
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение всех постов
+      tags:
+      - v2
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый пост с заголовком, содержимым и изображением
+      parameters:
+      - description: Данные поста
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Post'
+        "400":
+          description: Неверный формат данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создание поста
+      tags:
+      - v2
+  /v2/posts/{id}:
+    delete:
+      description: Удаляет существующий пост по его уникальному ID
+      parameters:
+      - description: ID поста
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Пост успешно удалён
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Пост не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удаление поста
+      tags:
+      - v2
+    get:
+      description: Возвращает пост на основе его уникального идентификатора
+      parameters:
+      - description: ID поста
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о посте
+          schema:
+            $ref: '#/definitions/model.Post'
+        "404":
+          description: Пост не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение поста по ID
+      tags:
+      - v2
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующий пост по его уникальному ID
+      parameters:
+      - description: ID поста
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновлённые данные поста
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновлённый пост
+          schema:
+            $ref: '#/definitions/model.Post'
+        "400":
+          description: Неверный формат данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Пост не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновление поста
+      tags:
+      - v2
+swagger: "2.0"
